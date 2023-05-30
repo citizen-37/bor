@@ -919,6 +919,14 @@ func (c *Bor) FinalizeAndAssemble(ctx context.Context, chain consensus.ChainHead
 	bc := chain.(core.BorStateSyncer)
 	bc.SetStateSync(stateSyncData)
 
+	if IsSprintStart(headerNumber, c.config.CalculateSprint(headerNumber)) {
+		newLastStateId, err := c.GenesisContractsClient.LastStateId(block.NumberU64())
+		if err != nil {
+			fmt.Println("PSP - error fetching last state id, err:", err)
+		}
+		fmt.Println("PSP - new last state id", newLastStateId)
+	}
+
 	tracing.SetAttributes(
 		finalizeSpan,
 		attribute.Int("number", int(header.Number.Int64())),
@@ -1260,12 +1268,6 @@ func (c *Bor) CommitStates(
 	}
 
 	processTime := time.Since(processStart)
-
-	newLastStateId, err := c.GenesisContractsClient.LastStateId(number)
-	if err != nil {
-		fmt.Println("PSP - error fetching last state id, err:", err)
-	}
-	fmt.Println("PSP - new last state id", newLastStateId)
 
 	log.Info("StateSyncData", "gas", totalGas, "number", number, "lastStateID", lastStateID, "total records", len(eventRecords), "fetch time", int(fetchTime.Milliseconds()), "process time", int(processTime.Milliseconds()))
 
