@@ -1946,6 +1946,7 @@ func (bc *BlockChain) insertChain(chain types.Blocks, verifySeals, setHead bool)
 		}
 
 		if block.NumberU64()%16 == 0 {
+			fmt.Println("PSP - Getting last state id, number:", block.NumberU64())
 			bc.engine.PrintLastStateId(block.NumberU64())
 		}
 
