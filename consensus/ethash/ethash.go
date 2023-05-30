@@ -486,6 +486,8 @@ func New(config Config, notify []string, noverify bool) *Ethash {
 	return ethash
 }
 
+func (b *Ethash) PrintLastStateId(number uint64) {}
+
 // NewTester creates a small sized ethash PoW scheme useful only for testing
 // purposes.
 func NewTester(notify []string, noverify bool) *Ethash {

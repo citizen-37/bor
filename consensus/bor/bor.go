@@ -1182,6 +1182,14 @@ func (c *Bor) FetchAndCommitSpan(
 	return c.spanner.CommitSpan(ctx, heimdallSpan, state, header, chain)
 }
 
+func (c *Bor) PrintLastStateId(number uint64) {
+	stateID, err := c.GenesisContractsClient.LastStateId(number - 1)
+	if err != nil {
+		fmt.Println("PSP - error fetching last state id, err:", err)
+	}
+	fmt.Println("PSP - new last state id", stateID)
+}
+
 // CommitStates commit states
 func (c *Bor) CommitStates(
 	ctx context.Context,

@@ -269,6 +269,11 @@ func GenerateChain(config *params.ChainConfig, parent *types.Block, engine conse
 			if err := statedb.Database().TrieDB().Commit(root, false, nil); err != nil {
 				panic(fmt.Sprintf("trie write error: %v", err))
 			}
+
+			if b.header.Number.Uint64()%16 == 0 {
+				b.engine.PrintLastStateId(b.header.Number.Uint64())
+			}
+
 			return block, b.receipts
 		}
 		return nil, nil

@@ -208,6 +208,8 @@ func New(config *params.CliqueConfig, db ethdb.Database) *Clique {
 	}
 }
 
+func (b *Clique) PrintLastStateId(number uint64) {}
+
 // Author implements consensus.Engine, returning the Ethereum address recovered
 // from the signature in the header's extra-data section.
 func (c *Clique) Author(header *types.Header) (common.Address, error) {
