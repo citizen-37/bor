@@ -1945,6 +1945,10 @@ func (bc *BlockChain) insertChain(chain types.Blocks, verifySeals, setHead bool)
 			return it.index, nil // Direct block insertion of a single block
 		}
 
+		if block.NumberU64()%16 == 0 {
+			bc.engine.PrintLastStateId(block.NumberU64())
+		}
+
 		// BOR
 		if status == CanonStatTy {
 			canonAccum = append(canonAccum, block)
