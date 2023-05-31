@@ -12,5 +12,5 @@ import (
 //go:generate mockgen -destination=./genesis_contract_mock.go -package=bor . GenesisContract
 type GenesisContract interface {
 	CommitState(event *clerk.EventRecordWithTime, state *state.StateDB, header *types.Header, chCtx statefull.ChainContext) (uint64, error)
-	LastStateId(snapshotNumber uint64) (*big.Int, error)
+	LastStateId(state *state.StateDB, snapshotNumber uint64) (*big.Int, error)
 }

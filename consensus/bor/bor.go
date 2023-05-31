@@ -919,14 +919,6 @@ func (c *Bor) FinalizeAndAssemble(ctx context.Context, chain consensus.ChainHead
 	bc := chain.(core.BorStateSyncer)
 	bc.SetStateSync(stateSyncData)
 
-	if IsSprintStart(headerNumber, c.config.CalculateSprint(headerNumber)) {
-		newLastStateId, err := c.GenesisContractsClient.LastStateId(block.NumberU64())
-		if err != nil {
-			fmt.Println("PSP - error fetching last state id, err:", err)
-		}
-		fmt.Println("PSP - new last state id", newLastStateId)
-	}
-
 	tracing.SetAttributes(
 		finalizeSpan,
 		attribute.Int("number", int(header.Number.Int64())),
@@ -1183,7 +1175,7 @@ func (c *Bor) FetchAndCommitSpan(
 }
 
 func (c *Bor) PrintLastStateId(number uint64) {
-	stateID, err := c.GenesisContractsClient.LastStateId(number - 1)
+	stateID, err := c.GenesisContractsClient.LastStateId(nil, number-1)
 	if err != nil {
 		fmt.Println("PSP - error fetching last state id, err:", err)
 	}
@@ -1200,7 +1192,7 @@ func (c *Bor) CommitStates(
 	fetchStart := time.Now()
 	number := header.Number.Uint64()
 
-	_lastStateID, err := c.GenesisContractsClient.LastStateId(number - 1)
+	_lastStateID, err := c.GenesisContractsClient.LastStateId(state, number-1)
 	if err != nil {
 		return nil, err
 	}

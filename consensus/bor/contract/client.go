@@ -100,7 +100,7 @@ func (gc *GenesisContractsClient) CommitState(
 	return gasUsed, nil
 }
 
-func (gc *GenesisContractsClient) LastStateId(snapshotNumber uint64) (*big.Int, error) {
+func (gc *GenesisContractsClient) LastStateId(state *state.StateDB, snapshotNumber uint64) (*big.Int, error) {
 	blockNr := rpc.BlockNumber(snapshotNumber)
 
 	const method = "lastStateId"
@@ -116,7 +116,7 @@ func (gc *GenesisContractsClient) LastStateId(snapshotNumber uint64) (*big.Int, 
 	toAddress := common.HexToAddress(gc.StateReceiverContract)
 	gas := (hexutil.Uint64)(uint64(math.MaxUint64 / 2))
 
-	result, err := gc.ethAPI.Call(context.Background(), ethapi.TransactionArgs{
+	result, err := gc.ethAPI.CallWithState(context.Background(), state, ethapi.TransactionArgs{
 		Gas:  &gas,
 		To:   &toAddress,
 		Data: &msgData,

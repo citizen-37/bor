@@ -54,16 +54,16 @@ func (mr *MockGenesisContractMockRecorder) CommitState(arg0, arg1, arg2, arg3 in
 }
 
 // LastStateId mocks base method.
-func (m *MockGenesisContract) LastStateId(arg0 uint64) (*big.Int, error) {
+func (m *MockGenesisContract) LastStateId(arg0 *state.StateDB, arg1 uint64) (*big.Int, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "LastStateId", arg0)
+	ret := m.ctrl.Call(m, "LastStateId", arg0, arg1)
 	ret0, _ := ret[0].(*big.Int)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // LastStateId indicates an expected call of LastStateId.
-func (mr *MockGenesisContractMockRecorder) LastStateId(arg0 interface{}) *gomock.Call {
+func (mr *MockGenesisContractMockRecorder) LastStateId(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LastStateId", reflect.TypeOf((*MockGenesisContract)(nil).LastStateId), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LastStateId", reflect.TypeOf((*MockGenesisContract)(nil).LastStateId), arg0, arg1)
 }
