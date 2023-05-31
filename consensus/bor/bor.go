@@ -1193,6 +1193,7 @@ func (c *Bor) CommitStates(
 	number := header.Number.Uint64()
 
 	hash := header.Hash()
+	log.Info("PSP - Fetching last state ID", "number", number, "hash", hash)
 	_lastStateID, err := c.GenesisContractsClient.LastStateId(state, number-1, &hash)
 	if err != nil {
 		return nil, err
