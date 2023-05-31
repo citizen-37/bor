@@ -100,7 +100,7 @@ func (gc *GenesisContractsClient) CommitState(
 	return gasUsed, nil
 }
 
-func (gc *GenesisContractsClient) LastStateId(state *state.StateDB, snapshotNumber uint64) (*big.Int, error) {
+func (gc *GenesisContractsClient) LastStateId(state *state.StateDB, snapshotNumber uint64, snapshotHash *common.Hash) (*big.Int, error) {
 	blockNr := rpc.BlockNumber(snapshotNumber)
 
 	const method = "lastStateId"
@@ -120,7 +120,7 @@ func (gc *GenesisContractsClient) LastStateId(state *state.StateDB, snapshotNumb
 		Gas:  &gas,
 		To:   &toAddress,
 		Data: &msgData,
-	}, rpc.BlockNumberOrHash{BlockNumber: &blockNr}, nil)
+	}, rpc.BlockNumberOrHash{BlockNumber: &blockNr, BlockHash: snapshotHash}, nil)
 	if err != nil {
 		return nil, err
 	}

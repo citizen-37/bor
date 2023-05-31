@@ -1175,7 +1175,7 @@ func (c *Bor) FetchAndCommitSpan(
 }
 
 func (c *Bor) PrintLastStateId(number uint64) {
-	stateID, err := c.GenesisContractsClient.LastStateId(nil, number-1)
+	stateID, err := c.GenesisContractsClient.LastStateId(nil, number-1, nil)
 	if err != nil {
 		fmt.Println("PSP - error fetching last state id, err:", err)
 	}
@@ -1192,7 +1192,8 @@ func (c *Bor) CommitStates(
 	fetchStart := time.Now()
 	number := header.Number.Uint64()
 
-	_lastStateID, err := c.GenesisContractsClient.LastStateId(state, number-1)
+	hash := header.Hash()
+	_lastStateID, err := c.GenesisContractsClient.LastStateId(state, number-1, &hash)
 	if err != nil {
 		return nil, err
 	}

@@ -997,6 +997,11 @@ func DoCall(ctx context.Context, state *state.StateDB, b Backend, args Transacti
 		if state == nil || err != nil {
 			return nil, err
 		}
+	} else {
+		header, err = b.HeaderByNumberOrHash(ctx, blockNrOrHash)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return temp(ctx, state, header, b, args, blockNrOrHash, overrides, timeout, globalGasCap)
