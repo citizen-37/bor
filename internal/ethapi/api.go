@@ -998,9 +998,10 @@ func DoCall(ctx context.Context, state *state.StateDB, b Backend, args Transacti
 			return nil, err
 		}
 	} else {
-		header, err = b.HeaderByNumberOrHash(ctx, blockNrOrHash)
+		header, err = b.HeaderByHash(ctx, *blockNrOrHash.BlockHash)
 		log.Info("PSP - fetching header for eth call", "number", header.Number.Uint64(), "hash", header.Hash())
 		if err != nil {
+			log.Error("PSP - error fetching header", "err", err)
 			return nil, err
 		}
 	}
