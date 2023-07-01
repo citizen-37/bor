@@ -41,7 +41,7 @@ func newRPCServingTimer(method string, valid bool) metrics.Timer {
 func newEpMetrics(service string) (metrics.Gauge, metrics.Gauge, metrics.Histogram) {
 	epWorkerCount := fmt.Sprintf("rpc/ep/workers/%s", service)
 	epWaitingQueue := fmt.Sprintf("rpc/ep/queue/%s", service)
-	epProcessedRequests := fmt.Sprintf("rpc/ep/processed/%s", service)
+	epProcessedRequests := fmt.Sprintf("rpc/ep/testing/%s", service)
 
 	return metrics.GetOrRegisterGauge(epWorkerCount, nil), metrics.GetOrRegisterGauge(epWaitingQueue, nil), metrics.GetOrRegisterHistogram(epProcessedRequests, nil, metrics.NewExpDecaySample(1028, 0.015))
 }
