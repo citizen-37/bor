@@ -19,6 +19,7 @@ package miner
 import (
 	"bytes"
 	"context"
+	"encoding/csv"
 	"errors"
 	"fmt"
 	"math/big"
@@ -26,6 +27,7 @@ import (
 	"runtime"
 	"runtime/pprof"
 	ptrace "runtime/trace"
+	"strconv"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -1404,6 +1406,8 @@ func (w *worker) fillTransactions(ctx context.Context, interrupt *int32, env *en
 	ctx, span := tracing.StartSpan(ctx, "fillTransactions")
 	defer tracing.EndSpan(span)
 
+	var execTime time.Duration
+
 	// Split the pending transactions into locals and remotes
 	// Fill the block with all available pending transactions.
 
@@ -1529,7 +1533,9 @@ func (w *worker) fillTransactions(ctx context.Context, interrupt *int32, env *en
 		})
 
 		tracing.Exec(ctx, "", "worker.LocalCommitTransactions", func(ctx context.Context, span trace.Span) {
+			start := time.Now()
 			committed = w.commitTransactions(env, txs, interrupt, interruptCtx)
+			execTime += time.Since(start)
 		})
 
 		if committed {
@@ -1557,7 +1563,9 @@ func (w *worker) fillTransactions(ctx context.Context, interrupt *int32, env *en
 		})
 
 		tracing.Exec(ctx, "", "worker.RemoteCommitTransactions", func(ctx context.Context, span trace.Span) {
+			start := time.Now()
 			committed = w.commitTransactions(env, txs, interrupt, interruptCtx)
+			execTime += time.Since(start)
 		})
 
 		if committed {
@@ -1566,6 +1574,8 @@ func (w *worker) fillTransactions(ctx context.Context, interrupt *int32, env *en
 
 		remoteEnvTCount = env.tcount
 	}
+
+	go dumpMetrics(env.header.Number.Uint64(), env.header.GasUsed, execTime)
 
 	tracing.SetAttributes(
 		span,
@@ -1822,4 +1832,30 @@ func totalFees(block *types.Block, receipts []*types.Receipt) *big.Float {
 		feesWei.Add(feesWei, new(big.Int).Mul(new(big.Int).SetUint64(receipts[i].GasUsed), minerFee))
 	}
 	return new(big.Float).Quo(new(big.Float).SetInt(feesWei), new(big.Float).SetInt(big.NewInt(params.Ether)))
+}
+
+func dumpMetrics(number, gasLimit uint64, timeTaken time.Duration) {
+	// Open the CSV file in append-only mode or create it if it doesn't exist
+	file, err := os.OpenFile("bor_metrics.csv", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	if err != nil {
+		log.Info("*** Error opening metrics file", "err", err)
+		return
+	}
+	defer file.Close()
+
+	// Data to be appended
+	newData := []string{strconv.FormatUint(number, 10), strconv.FormatUint(gasLimit, 10), timeTaken.String()}
+
+	// Append the data to the CSV file
+	if err := appendDataToFile(file, newData); err != nil {
+		log.Info("*** Error writing metrics", "err", err)
+		return
+	}
+}
+
+func appendDataToFile(file *os.File, data []string) error {
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	return writer.Write(data)
 }
